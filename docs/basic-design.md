@@ -66,6 +66,8 @@ graph TD
 - サーバーレスアーキテクチャによるコスト最小化
 - API Gateway + Lambdaによる拡張性と柔軟性の確保
 - クラウドネイティブなサービスの活用
+- 状態管理はAngularのSignalを使用
+- UIはモダンでシンプルなダークモード対応
 
 ## 2. データベース設計
 
@@ -82,6 +84,7 @@ erDiagram
     USERS {
         uuid id PK
         varchar email
+        varchar password_hash
         timestamp created_at
         timestamp updated_at
     }
@@ -136,6 +139,7 @@ erDiagram
 |---------|---------|------|
 | id | UUID | プライマリキー |
 | email | VARCHAR(255) | ユーザーメールアドレス |
+| password_hash | VARCHAR(255) | パスワード |
 | created_at | TIMESTAMP | 作成日時 |
 | updated_at | TIMESTAMP | 更新日時 |
 
