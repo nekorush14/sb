@@ -3,6 +3,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './core/auth/login/login.component';
 import { PasswordResetComponent } from './core/auth/password-reset/password-reset.component';
 import { LandingComponent } from './core/landing/landing.component';
+import { DashboardComponent } from './feature/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
@@ -18,11 +19,11 @@ export const routes: Routes = [
     path: 'auth/password-reset',
     component: PasswordResetComponent
   },
-  // {
-  //   path: 'dashboard',
-  //   loadChildren: () => import('./feature/dashboard/dashboard.module').then(m => m.DashboardModule),
-  //   canActivate: [authGuard]
-  // },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [authGuard]
+  },
   {
     path: '**',
     redirectTo: '/auth/login'
