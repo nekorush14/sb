@@ -1,1 +1,97 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <app-menu-bar></app-menu-bar>
+
+  <!-- エラー表示 -->
+  @if (error) {
+    <div class="alert alert-error">
+      <p>{{ error }}</p>
+      <button (click)="loadDashboardData()">再試行</button>
+    </div>
+  }
+
+  <!-- ローディング表示 -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>データを読み込んでいます...</p>
+    </div>
+  }
+
+  @if (!isLoading && !error) {
+    <h1 class="dashboard-title">ダッシュボード</h1>
+
+    <!-- 在庫概要セクション -->
+    <section class="inventory-summary">
+      <h2>在庫概要</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <h3>総アイテム数</h3>
+          <p class="count">{{ inventorySummary?.totalItems }}</p>
+        </div>
+        <div class="summary-card">
+          <h3>カテゴリ数</h3>
+          <p class="count">{{ inventorySummary?.totalCategories }}</p>
+        </div>
+        <div class="summary-card">
+          <h3>総在庫金額</h3>
+          <p class="count">¥{{ inventorySummary?.totalValue?.toLocaleString() }}</p>
+        </div>
+        <div class="summary-card warning">
+          <h3>在庫わずか</h3>
+          <p class="count">{{ inventorySummary?.lowStockItems }}</p>
+        </div>
+        <div class="summary-card warning">
+          <h3>消費期限近接</h3>
+          <p class="count">{{ inventorySummary?.expiringItems }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 注意アラートセクション -->
+    <section class="alerts-section">
+      <h2>注意アラート</h2>
+      @if (alerts.length === 0) {
+        <p class="no-alerts">現在、注意が必要なアイテムはありません。</p>
+      } @else {
+        <ul class="alerts-list">
+          @for (alert of alerts; track alert.id) {
+            <li class="alert-item" [ngClass]="alert.alertType">
+              <div class="alert-icon">
+                @if (alert.alertType === 'low-stock') {
+                  <span class="material-icons">inventory_2</span>
+                } @else if (alert.alertType === 'expiring') {
+                  <span class="material-icons">timer</span>
+                }
+              </div>
+              <div class="alert-details">
+                <h3>{{ alert.name }}</h3>
+                <p class="alert-type">{{ getAlertTypeLabel(alert.alertType) }}</p>
+                @if (alert.alertType === 'low-stock') {
+                  <p class="alert-info">残り: {{ alert.quantity }} 個</p>
+                } @else if (alert.alertType === 'expiring') {
+                  <p class="alert-info" [ngClass]="getUrgencyClass(alert.daysRemaining)">
+                    期限まで残り: {{ alert.daysRemaining }} 日
+                  </p>
+                }
+              </div>
+              <a [routerLink]="['/items', alert.id]" class="action-button">詳細</a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- アクションセクション -->
+    <section class="actions-section">
+      <h2>クイックアクション</h2>
+      <div class="action-buttons">
+        <a [routerLink]="['/items/new']" class="action-button primary">
+          <span class="material-icons">add</span>新規アイテム登録
+        </a>
+        <a [routerLink]="['/items']" class="action-button">
+          <span class="material-icons">list</span>在庫一覧
+        </a>
+      </div>
+    </section>
+  }
+</div>

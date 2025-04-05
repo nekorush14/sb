@@ -1,0 +1,27 @@
+<header class="menu-bar">
+  <nav class="main-menu">
+    <a [routerLink]="['/dashboard']" routerLinkActive="active" class="menu-item">
+      <span class="material-icons">dashboard</span>ダッシュボード
+    </a>
+    <a [routerLink]="['/items']" routerLinkActive="active" class="menu-item">
+      <span class="material-icons">inventory_2</span>在庫管理
+    </a>
+    <a [routerLink]="['/categories']" routerLinkActive="active" class="menu-item">
+      <span class="material-icons">category</span>カテゴリ管理
+    </a>
+    <a [routerLink]="['/storage-locations']" routerLinkActive="active" class="menu-item">
+      <span class="material-icons">location_on</span>保管場所管理
+    </a>
+    <a [routerLink]="['/analytics']" routerLinkActive="active" class="menu-item">
+      <span class="material-icons">analytics</span>データ分析
+    </a>
+  </nav>
+  <div class="user-actions">
+    <a [routerLink]="['/settings']" class="menu-item">
+      <span class="material-icons">settings</span>設定
+    </a>
+    <a class="menu-item logout" (click)="logout()">
+      <span class="material-icons">logout</span>ログアウト
+    </a>
+  </div>
+</header>
