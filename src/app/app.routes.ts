@@ -4,6 +4,7 @@ import { LoginComponent } from './core/auth/login/login.component';
 import { PasswordResetComponent } from './core/auth/password-reset/password-reset.component';
 import { LandingComponent } from './core/landing/landing.component';
 import { DashboardComponent } from './feature/dashboard/dashboard.component';
+import { InventoryComponent } from './feature/inventory/inventory.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,11 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'items',
+    component: InventoryComponent,
     canActivate: [authGuard]
   },
   {

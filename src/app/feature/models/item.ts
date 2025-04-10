@@ -2,10 +2,14 @@ export interface Item {
   id: string;
   userId: string;
   name: string;
+  category: string;
   categoryId: string;
   quantity: number;
   purchaseDate: Date;
+  totalValue: number;
   price: number;
+  unit: string;
+  location: string;
   storageLocationId: string;
   expiryDate?: Date;
   barcode?: string;

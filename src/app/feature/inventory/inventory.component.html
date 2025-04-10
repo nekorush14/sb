@@ -1,0 +1,180 @@
+<div class="inventory-container">
+  <app-menu-bar></app-menu-bar>
+
+  <div class="inventory-header">
+    <h1 class="page-title">在庫管理</h1>
+  </div>
+
+  <!-- 在庫概要カード -->
+  @if (summary(); as inventorySummary) {
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="card-icon">📦</div>
+        <div class="card-content">
+          <h3>総在庫数</h3>
+          <p class="card-value">{{ inventorySummary.totalItems }}</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">🏷️</div>
+        <div class="card-content">
+          <h3>カテゴリー</h3>
+          <p class="card-value">{{ inventorySummary.totalCategories }}</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">💰</div>
+        <div class="card-content">
+          <h3>総資産価値</h3>
+          <p class="card-value">¥{{ inventorySummary.totalValue.toLocaleString() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- アラート表示 -->
+  @if (alerts().length > 0) {
+    <section class="alerts-section">
+      <h2>要注意アイテム</h2>
+      <div class="alerts-container">
+        @for (alert of alerts(); track alert.id) {
+          <div class="alert-card" [class.expiring]="alert.alertType === 'expiring'" [class.low-stock]="alert.alertType === 'low-stock'">
+            <div class="alert-icon">
+              @if (alert.alertType === 'expiring') { ⚠️ }
+              @if (alert.alertType === 'low-stock') { 🔍 }
+            </div>
+            <div class="alert-content">
+              <h3>{{ alert.name }}</h3>
+              @if (alert.alertType === 'expiring') {
+                <p>期限まであと{{ alert.daysRemaining }}日</p>
+              }
+              @if (alert.alertType === 'low-stock') {
+                <p>残り{{ alert.quantity }}個</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- メイン在庫リスト -->
+  <section class="inventory-list-section">
+    <div class="inventory-filters">
+      <div class="search-box">
+        <input type="text" placeholder="アイテムを検索..." class="search-input" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+        <span class="search-icon">🔍</span>
+      </div>
+      <div class="list-actions">
+        <button class="space-button add-button">
+          <span class="button-icon">+</span>
+          新規アイテム追加
+        </button>
+      </div>
+    </div>
+
+    <!-- ローディング表示 -->
+    @if (loading()) {
+      <div class="loading-container">
+        <div class="space-spinner"></div>
+        <p>在庫データを読み込み中...</p>
+      </div>
+    }
+
+    <!-- エラーメッセージ -->
+    @if (error(); as errorMsg) {
+      <div class="error-container">
+        <p class="error-message">{{ errorMsg }}</p>
+        <button class="space-button" (click)="loadInventoryData()">再試行</button>
+      </div>
+    }
+
+    <!-- 在庫テーブル -->
+    @if (!loading() && !error() && items().length > 0) {
+      <div class="inventory-table-container">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th (click)="sortColumn.set('name'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'name'" [class.asc]="sortColumn() === 'name' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'name' && sortDirection() === 'desc'">
+                名前 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('quantity'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'quantity'" [class.asc]="sortColumn() === 'quantity' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'quantity' && sortDirection() === 'desc'">
+                数量 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('unit'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'unit'" [class.asc]="sortColumn() === 'unit' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'unit' && sortDirection() === 'desc'">
+                単位 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('category'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'category'" [class.asc]="sortColumn() === 'category' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'category' && sortDirection() === 'desc'">
+                カテゴリー <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('location'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'location'" [class.asc]="sortColumn() === 'location' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'location' && sortDirection() === 'desc'">
+                保管場所 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('purchaseDate'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'purchaseDate'" [class.asc]="sortColumn() === 'purchaseDate' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'purchaseDate' && sortDirection() === 'desc'">
+                購入日 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('price'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'price'" [class.asc]="sortColumn() === 'price' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'price' && sortDirection() === 'desc'">
+                価格 <span class="sort-icon"></span>
+              </th>
+              <th (click)="sortColumn.set('expiryDate'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'expiryDate'" [class.asc]="sortColumn() === 'expiryDate' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'expiryDate' && sortDirection() === 'desc'">
+                消費期限 <span class="sort-icon"></span>
+              </th>
+              <th>アクション</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredItems(); track item.id) {
+              <tr [class.low-stock]="isLowStock(item.quantity)" [class.expiring-soon]="isExpiringSoon(item.expiryDate)">
+                <td class="item-name">
+                  @if (item.imageUrl) {
+                    <div class="item-image" [style.backgroundImage]="'url(' + item.imageUrl + ')'"></div>
+                  } @else {
+                    <div class="item-image no-image">No Image</div>
+                  }
+                  {{ item.name }}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.category }}</td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.purchaseDate | date:'yyyy/MM/dd' }}</td>
+                <td>¥{{ item.price.toLocaleString() }}</td>
+                <td>
+                  @if (item.expiryDate) {
+                    {{ item.expiryDate | date:'yyyy/MM/dd' }}
+                  } @else {
+                    <span class="no-data">-</span>
+                  }
+                </td>
+                <td class="actions">
+                  <button class="action-button edit">編集</button>
+                  <button class="action-button delete">削除</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- データがない場合 -->
+    @if (!loading() && !error() && items().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>在庫データがありません</h3>
+        <p>新しいアイテムを追加して在庫管理を始めましょう</p>
+        <button class="space-button">新規アイテム追加</button>
+      </div>
+    }
+
+    <!-- 検索結果がない場合 -->
+    @if (!loading() && !error() && items().length > 0 && filteredItems().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>検索結果がありません</h3>
+        <p>「{{ searchTerm() }}」に一致するアイテムは見つかりませんでした</p>
+        <button class="space-button" (click)="searchTerm.set('')">検索をクリア</button>
+      </div>
+    }
+  </section>
+</div>
