@@ -66,7 +66,7 @@
         <span class="search-icon">🔍</span>
       </div>
       <div class="list-actions">
-        <button class="space-button add-button">
+        <button class="space-button add-button" (click)="openAddItemDialog()">
           <span class="button-icon">+</span>
           新規アイテム追加
         </button>
@@ -107,6 +107,9 @@
               <th (click)="sortColumn.set('category'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'category'" [class.asc]="sortColumn() === 'category' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'category' && sortDirection() === 'desc'">
                 カテゴリー <span class="sort-icon"></span>
               </th>
+              <th (click)="sortColumn.set('company'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'company'" [class.asc]="sortColumn() === 'company' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'company' && sortDirection() === 'desc'">
+                メーカー <span class="sort-icon"></span>
+              </th>
               <th (click)="sortColumn.set('location'); sortDirection.set(sortDirection() === 'asc' ? 'desc' : 'asc')" class="sortable" [class.sorted]="sortColumn() === 'location'" [class.asc]="sortColumn() === 'location' && sortDirection() === 'asc'" [class.desc]="sortColumn() === 'location' && sortDirection() === 'desc'">
                 保管場所 <span class="sort-icon"></span>
               </th>
@@ -136,6 +139,13 @@
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.unit }}</td>
                 <td>{{ item.category }}</td>
+                <td>
+                  @if (item.company) {
+                    {{ item.company }}
+                  } @else {
+                    <span class="no-data">-</span>
+                  }
+                </td>
                 <td>{{ item.location }}</td>
                 <td>{{ item.purchaseDate | date:'yyyy/MM/dd' }}</td>
                 <td>¥{{ item.price.toLocaleString() }}</td>
@@ -147,7 +157,7 @@
                   }
                 </td>
                 <td class="actions">
-                  <button class="action-button edit">編集</button>
+                  <button class="action-button edit" (click)="openEditItemDialog(item)">編集</button>
                   <button class="action-button delete">削除</button>
                 </td>
               </tr>
@@ -177,4 +187,12 @@
       </div>
     }
   </section>
+  
+  <!-- 編集ダイアログ -->
+  <app-inventory-edit
+    [item]="selectedItem()"
+    [isVisible]="isDialogVisible()"
+    (close)="closeDialog()"
+    (save)="saveItem($event)">
+  </app-inventory-edit>
 </div>

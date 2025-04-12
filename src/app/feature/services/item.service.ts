@@ -26,4 +26,14 @@ export class ItemService {
   getAllItems(): Observable<Item[]> {
     return this.http.get<Item[]>(`${this.apiUrl}/items`);
   }
+  
+  // 新しいアイテムを追加
+  addItem(item: Item): Observable<Item> {
+    return this.http.post<Item>(`${this.apiUrl}/items`, item);
+  }
+  
+  // 既存アイテムを更新
+  updateItem(item: Item): Observable<Item> {
+    return this.http.put<Item>(`${this.apiUrl}/items/${item.id}`, item);
+  }
 }

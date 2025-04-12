@@ -11,6 +11,7 @@ export interface Item {
   unit: string;
   location: string;
   storageLocationId: string;
+  company?: string;
   expiryDate?: Date;
   barcode?: string;
   imageUrl?: string;

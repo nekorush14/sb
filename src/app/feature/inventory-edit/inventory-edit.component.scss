@@ -1,0 +1,238 @@
+// 宇宙テーマのダイアログスタイル
+.dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-container {
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  background: rgba(13, 15, 40, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(110, 68, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(110, 68, 255, 0.3);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(90deg, rgba(45, 55, 114, 0.3), rgba(110, 68, 255, 0.3));
+  border-bottom: 1px solid rgba(110, 68, 255, 0.3);
+}
+
+.dialog-title {
+  color: var(--space-accent);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: var(--space-text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  
+  &:hover {
+    color: var(--space-accent);
+    background-color: rgba(0, 255, 255, 0.1);
+  }
+}
+
+.dialog-content {
+  padding: 1.5rem;
+  max-height: calc(90vh - 60px);
+  overflow-y: auto;
+  
+  // カスタムスクロールバー
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(110, 68, 255, 0.5);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(0, 255, 255, 0.5);
+    }
+  }
+}
+
+.inventory-form {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  
+  .form-grid {
+    display: grid;
+    grid-gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+  
+  .form-group {
+    position: relative;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--space-text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(110, 68, 255, 0.3);
+      border-radius: 8px;
+      color: var(--space-text);
+      transition: all 0.3s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--space-accent);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+      }
+      
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+      
+      // 数値入力の矢印スタイル
+      &[type="number"] {
+        -moz-appearance: textfield;
+        
+        &::-webkit-inner-spin-button, 
+        &::-webkit-outer-spin-button { 
+          -webkit-appearance: none;
+          margin: 0;
+        }
+      }
+      
+      // 日付入力のスタイル
+      &[type="date"] {
+        position: relative;
+        
+        &::-webkit-calendar-picker-indicator {
+          background-color: rgba(0, 255, 255, 0.1);
+          padding: 5px;
+          cursor: pointer;
+          border-radius: 4px;
+          filter: invert(1) brightness(0.7) sepia(100%) hue-rotate(170deg) saturate(5);
+        }
+      }
+    }
+    
+    .form-error {
+      position: absolute;
+      color: var(--space-error);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  
+  .cancel-button {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(110, 68, 255, 0.2);
+    border-radius: 8px;
+    color: var(--space-text-secondary);
+    font-weight: 500;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--space-text);
+    }
+  }
+  
+  .save-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--space-primary), var(--space-accent));
+    width: auto;
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .dialog-container {
+    width: 95%;
+    max-height: 95vh;
+  }
+}

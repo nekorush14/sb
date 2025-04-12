@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ItemService } from '../services/item.service';
 import { Item, AlertItem, InventorySummary } from '../models/item';
 import { MenuBarComponent } from '../../shared/menu-bar/menu-bar.component';
+import { InventoryEditComponent } from '../inventory-edit/inventory-edit.component';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuBarComponent],
+  imports: [CommonModule, FormsModule, MenuBarComponent, InventoryEditComponent],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss'
 })
@@ -24,6 +26,10 @@ export class InventoryComponent implements OnInit {
   sortColumn = signal<string>('name');
   sortDirection = signal<'asc' | 'desc'>('asc');
   
+  // ダイアログの表示制御用
+  isDialogVisible = signal<boolean>(false);
+  selectedItem = signal<Item | null>(null);
+  
   // フィルタリングとソートを適用した表示用アイテムリスト
   filteredItems = computed(() => {
     let filtered = [...this.items()];
@@ -34,6 +40,7 @@ export class InventoryComponent implements OnInit {
       filtered = filtered.filter(item => 
         item.name.toLowerCase().includes(term) || 
         item.category.toLowerCase().includes(term) || 
+        (item.company && item.company.toLowerCase().includes(term)) || 
         item.location.toLowerCase().includes(term)
       );
     }
@@ -72,7 +79,7 @@ export class InventoryComponent implements OnInit {
     return filtered;
   });
 
-  constructor(private itemService: ItemService) {}
+  constructor(private itemService: ItemService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadInventoryData();
@@ -88,6 +95,7 @@ export class InventoryComponent implements OnInit {
       error: (err) => {
         this.error.set('在庫データの取得に失敗しました。');
         this.loading.set(false);
+        this.toastService.error('在庫データの取得に失敗しました。ネットワーク接続を確認してください。');
         console.error('Error fetching inventory items:', err);
       }
     });
@@ -95,13 +103,19 @@ export class InventoryComponent implements OnInit {
     // アラートデータを取得
     this.itemService.getAlerts().subscribe({
       next: (data) => this.alerts.set(data),
-      error: (err) => console.error('Error fetching alerts:', err)
+      error: (err) => {
+        console.error('Error fetching alerts:', err);
+        this.toastService.error('アラート情報の取得に失敗しました。');
+      }
     });
 
     // 在庫概要データを取得
     this.itemService.getInventorySummary().subscribe({
       next: (data) => this.summary.set(data),
-      error: (err) => console.error('Error fetching inventory summary:', err)
+      error: (err) => {
+        console.error('Error fetching inventory summary:', err);
+        this.toastService.error('在庫概要の取得に失敗しました。');
+      }
     });
   }
 
@@ -120,5 +134,54 @@ export class InventoryComponent implements OnInit {
   // 在庫数が少ない商品かをチェックする
   isLowStock(quantity: number): boolean {
     return quantity <= 2;
+  }
+
+  // 新規アイテム追加ダイアログを開く
+  openAddItemDialog(): void {
+    this.selectedItem.set(null); // 新規アイテムの場合はnullをセット
+    this.isDialogVisible.set(true);
+  }
+
+  // アイテム編集ダイアログを開く
+  openEditItemDialog(item: Item): void {
+    this.selectedItem.set({...item}); // 編集する場合は選択したアイテムをセット
+    this.isDialogVisible.set(true);
+  }
+
+  // ダイアログを閉じる
+  closeDialog(): void {
+    this.isDialogVisible.set(false);
+  }
+
+  // アイテムを保存する
+  saveItem(item: Item): void {
+    if (this.selectedItem()) {
+      // 既存アイテムの編集の場合
+      this.itemService.updateItem(item).subscribe({
+        next: (updatedItem) => {
+          // 成功した場合、アイテムリストを更新
+          const updatedItems = this.items().map(i => i.id === updatedItem.id ? updatedItem : i);
+          this.items.set(updatedItems);
+          this.toastService.success(`「${updatedItem.name}」の更新が完了しました`);
+        },
+        error: (err) => {
+          console.error('Error updating item:', err);
+          this.toastService.error(`「${item.name}」の更新に失敗しました。もう一度お試しください。`);
+        }
+      });
+    } else {
+      // 新規アイテムの追加の場合
+      this.itemService.addItem(item).subscribe({
+        next: (newItem) => {
+          // 成功した場合、アイテムリストに追加
+          this.items.set([...this.items(), newItem]);
+          this.toastService.success(`新しいアイテム「${newItem.name}」が追加されました`);
+        },
+        error: (err) => {
+          console.error('Error adding item:', err);
+          this.toastService.error('アイテムの追加に失敗しました。もう一度お試しください。');
+        }
+      });
+    }
   }
 }

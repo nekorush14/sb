@@ -1,0 +1,105 @@
+@if (isVisible) {
+  <div class="dialog-backdrop" (click)="closeDialog()">
+    <div class="dialog-container" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2 class="dialog-title">{{ dialogTitle }}</h2>
+        <button class="close-button" (click)="closeDialog()">×</button>
+      </div>
+      
+      <div class="dialog-content">
+        <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="space-form inventory-form">
+          <div class="form-grid">
+            <!-- 名前 -->
+            <div class="form-group">
+              <label for="name">名前</label>
+              <input id="name" type="text" formControlName="name" placeholder="アイテム名">
+              @if (itemForm.get('name')?.invalid && itemForm.get('name')?.touched) {
+                <div class="form-error">アイテム名は必須です</div>
+              }
+            </div>
+            
+            <!-- 数量と単位 -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="quantity">数量</label>
+                <input id="quantity" type="number" formControlName="quantity" min="0">
+                @if (itemForm.get('quantity')?.invalid && itemForm.get('quantity')?.touched) {
+                  <div class="form-error">有効な数量を入力してください</div>
+                }
+              </div>
+              
+              <div class="form-group">
+                <label for="unit">単位</label>
+                <input id="unit" type="text" formControlName="unit" placeholder="個、本、kg等">
+                @if (itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched) {
+                  <div class="form-error">単位は必須です</div>
+                }
+              </div>
+            </div>
+            
+            <!-- カテゴリーとメーカー -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category">カテゴリー</label>
+                <input id="category" type="text" formControlName="category" placeholder="カテゴリー">
+                @if (itemForm.get('category')?.invalid && itemForm.get('category')?.touched) {
+                  <div class="form-error">カテゴリーは必須です</div>
+                }
+              </div>
+              
+              <div class="form-group">
+                <label for="company">メーカー</label>
+                <input id="company" type="text" formControlName="company" placeholder="メーカー名（任意）">
+              </div>
+            </div>
+            
+            <!-- 保管場所 -->
+            <div class="form-group">
+              <label for="location">保管場所</label>
+              <input id="location" type="text" formControlName="location" placeholder="保管場所">
+              @if (itemForm.get('location')?.invalid && itemForm.get('location')?.touched) {
+                <div class="form-error">保管場所は必須です</div>
+              }
+            </div>
+            
+            <!-- 価格 -->
+            <div class="form-group">
+              <label for="price">価格（円）</label>
+              <input id="price" type="number" formControlName="price" min="0">
+              @if (itemForm.get('price')?.invalid && itemForm.get('price')?.touched) {
+                <div class="form-error">有効な価格を入力してください</div>
+              }
+            </div>
+            
+            <!-- 購入日と消費期限 -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="purchaseDate">購入日</label>
+                <input id="purchaseDate" type="date" formControlName="purchaseDate">
+                @if (itemForm.get('purchaseDate')?.invalid && itemForm.get('purchaseDate')?.touched) {
+                  <div class="form-error">購入日は必須です</div>
+                }
+              </div>
+              
+              <div class="form-group">
+                <label for="expiryDate">消費期限（任意）</label>
+                <input id="expiryDate" type="date" formControlName="expiryDate">
+              </div>
+            </div>
+            
+            <!-- 画像URL -->
+            <div class="form-group">
+              <label for="imageUrl">画像URL（任意）</label>
+              <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="画像のURL">
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="cancel-button" (click)="closeDialog()">キャンセル</button>
+            <button type="submit" class="space-button save-button" [disabled]="itemForm.invalid">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
