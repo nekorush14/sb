@@ -191,5 +191,26 @@ export const itemHandlers = [
     inventoryItems[index] = { ...inventoryItems[index], ...updatedItem };
     
     return HttpResponse.json(inventoryItems[index]);
+  }),
+  
+  // アイテムを削除
+  http.delete(`${apiUrl}/items/:id`, ({ params }) => {
+    const { id } = params;
+    
+    // 対象アイテムのインデックスを検索
+    const index = inventoryItems.findIndex(item => item.id === id);
+    
+    if (index === -1) {
+      // アイテムが見つからない場合は404エラー
+      return new HttpResponse(null, { status: 404 });
+    }
+    
+    // 削除するアイテムを取得
+    const deletedItem = inventoryItems[index];
+    
+    // アイテムを削除
+    inventoryItems = inventoryItems.filter(item => item.id !== id);
+    
+    return HttpResponse.json(deletedItem);
   })
 ];

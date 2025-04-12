@@ -6,11 +6,12 @@ import { Item, AlertItem, InventorySummary } from '../models/item';
 import { MenuBarComponent } from '../../shared/menu-bar/menu-bar.component';
 import { InventoryEditComponent } from '../inventory-edit/inventory-edit.component';
 import { ToastService } from '../../core/services/toast.service';
+import { AppDialogComponent } from '../../shared/app-dialog/app-dialog.component';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuBarComponent, InventoryEditComponent],
+  imports: [CommonModule, FormsModule, MenuBarComponent, InventoryEditComponent, AppDialogComponent],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss'
 })
@@ -29,6 +30,10 @@ export class InventoryComponent implements OnInit {
   // ダイアログの表示制御用
   isDialogVisible = signal<boolean>(false);
   selectedItem = signal<Item | null>(null);
+  
+  // 削除確認ダイアログの表示制御用
+  isDeleteDialogVisible = signal<boolean>(false);
+  itemToDelete = signal<Item | null>(null);
   
   // フィルタリングとソートを適用した表示用アイテムリスト
   filteredItems = computed(() => {
@@ -147,10 +152,43 @@ export class InventoryComponent implements OnInit {
     this.selectedItem.set({...item}); // 編集する場合は選択したアイテムをセット
     this.isDialogVisible.set(true);
   }
+  
+  // 削除確認ダイアログを開く
+  openDeleteItemDialog(item: Item): void {
+    this.itemToDelete.set(item);
+    this.isDeleteDialogVisible.set(true);
+  }
+  
+  // 削除を実行する
+  deleteItem(): void {
+    const item = this.itemToDelete();
+    if (item && item.id) {
+      this.itemService.deleteItem(item.id).subscribe({
+        next: () => {
+          // 削除に成功したら、リストから該当アイテムを削除
+          const updatedItems = this.items().filter(i => i.id !== item.id);
+          this.items.set(updatedItems);
+          this.toastService.success(`「${item.name}」を削除しました`);
+          this.closeDeleteDialog();
+        },
+        error: (err) => {
+          console.error('Error deleting item:', err);
+          this.toastService.error(`「${item.name}」の削除に失敗しました。もう一度お試しください。`);
+          this.closeDeleteDialog();
+        }
+      });
+    }
+  }
 
   // ダイアログを閉じる
   closeDialog(): void {
     this.isDialogVisible.set(false);
+  }
+  
+  // 削除ダイアログを閉じる
+  closeDeleteDialog(): void {
+    this.isDeleteDialogVisible.set(false);
+    this.itemToDelete.set(null);
   }
 
   // アイテムを保存する

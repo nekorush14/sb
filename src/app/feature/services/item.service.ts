@@ -58,4 +58,14 @@ export class ItemService {
   updateItem(item: Item): Observable<Item> {
     return this.http.put<Item>(`${this.apiUrl}/items/${item.id}`, item);
   }
+
+  /**
+   * アイテムを削除
+   * 
+   * @param id - 削除するアイテムのID
+   * @returns - 削除されたアイテム
+   */
+  deleteItem(id: string): Observable<Item> {
+    return this.http.delete<Item>(`${this.apiUrl}/items/${id}`);
+  }
 }

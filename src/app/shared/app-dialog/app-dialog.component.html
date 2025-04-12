@@ -1,0 +1,31 @@
+<div class="dialog-overlay" [class.visible]="isVisible">
+  <div class="dialog-container" [class.visible]="isVisible" [class]="dialogType">
+    <div class="dialog-header">
+      <div class="dialog-icon">
+        <span class="material-icons">
+          <ng-container [ngSwitch]="dialogType">
+            <ng-container *ngSwitchCase="'confirmation'">help</ng-container>
+            <ng-container *ngSwitchCase="'warning'">warning</ng-container>
+            <ng-container *ngSwitchCase="'danger'">error</ng-container>
+            <ng-container *ngSwitchCase="'success'">check_circle</ng-container>
+            <ng-container *ngSwitchDefault>info</ng-container>
+          </ng-container>
+        </span>
+      </div>
+      <h2 class="dialog-title">{{ title }}</h2>
+      @if (showCloseButton) {
+        <button class="close-button" (click)="onCancel()">✕</button>
+      }
+    </div>
+    <div class="dialog-content">
+      <p>{{ message }}</p>
+      <ng-content></ng-content>
+    </div>
+    <div class="dialog-actions">
+      @if (showCancelButton) {
+        <button class="cancel-button" (click)="onCancel()">{{ cancelText }}</button>
+      }
+      <button class="confirm-button" [class]="dialogType + '-button'" (click)="onConfirm()">{{ confirmText }}</button>
+    </div>
+  </div>
+</div>
