@@ -21,6 +21,9 @@ export class ToastService {
   
   /**
    * 成功メッセージのトースト通知を表示
+   * 
+   * @param message - 表示するメッセージ
+   * @param timeout - 自動削除までの時間（ミリ秒）
    */
   success(message: string, timeout = 5000): void {
     this.show(message, 'success', timeout);
@@ -28,6 +31,9 @@ export class ToastService {
   
   /**
    * エラーメッセージのトースト通知を表示
+   * 
+   * @param message - 表示するメッセージ
+   * @param timeout - 自動削除までの時間（ミリ秒）
    */
   error(message: string, timeout = 7000): void {
     this.show(message, 'error', timeout);
@@ -35,6 +41,9 @@ export class ToastService {
   
   /**
    * 情報メッセージのトースト通知を表示
+   * 
+   * @param message - 表示するメッセージ
+   * @param timeout - 自動削除までの時間（ミリ秒）
    */
   info(message: string, timeout = 5000): void {
     this.show(message, 'info', timeout);
@@ -42,6 +51,9 @@ export class ToastService {
   
   /**
    * 警告メッセージのトースト通知を表示
+   * 
+   * @param message - 表示するメッセージ
+   * @param timeout - 自動削除までの時間（ミリ秒）
    */
   warning(message: string, timeout = 6000): void {
     this.show(message, 'warning', timeout);
@@ -49,6 +61,8 @@ export class ToastService {
   
   /**
    * トースト通知を削除
+   * 
+   * @param id - 削除するトーストのID
    */
   remove(id: number): void {
     this.toasts.update(toasts => toasts.filter(toast => toast.id !== id));
@@ -56,6 +70,10 @@ export class ToastService {
   
   /**
    * トースト通知を表示
+   * 
+   * @param message - 表示するメッセージ
+   * @param type - トーストの種類
+   * @param timeout - 自動削除までの時間（ミリ秒）
    */
   private show(message: string, type: ToastType, timeout: number): void {
     const id = this.nextId++;

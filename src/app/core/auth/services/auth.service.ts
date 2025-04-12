@@ -69,6 +69,9 @@ export class AuthService {
   
   /**
    * ログイン処理
+   * 
+   * @param credentials - ログイン情報
+   * @returns - 認証レスポンス
    */
   login(credentials: AuthRequest): Observable<AuthResponse> {
     // Passwordをハッシュ化する
@@ -87,6 +90,9 @@ export class AuthService {
   
   /**
    * ユーザー登録処理
+   * 
+   * @param userData - ユーザー登録情報
+   * @returns - 認証レスポンス
    */
   signup(userData: SignupRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/signup`, userData).pipe(
@@ -117,6 +123,8 @@ export class AuthService {
   
   /**
    * トークンのリフレッシュ
+   * 
+   * @returns - 新しいトークン
    */
   refreshToken(): Observable<AuthResponse> {
     const refreshToken = sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
@@ -139,6 +147,9 @@ export class AuthService {
   
   /**
    * パスワードリセットリクエスト
+   * 
+   * @param request - パスワードリセットリクエスト
+   * @returns - 成功メッセージ
    */
   requestPasswordReset(request: PasswordResetRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/auth/password-reset/request`, request).pipe(
@@ -150,6 +161,9 @@ export class AuthService {
   
   /**
    * パスワードリセットの確認
+   * 
+   * @param request - パスワードリセット確認リクエスト
+   * @returns - 成功メッセージ
    */
   confirmPasswordReset(request: PasswordResetConfirmRequest): Observable<{ message: string }> {
     // Passwordをハッシュ化する
@@ -211,6 +225,8 @@ export class AuthService {
   
   /**
    * 認証レスポンス処理
+   * 
+   * @param response - 認証レスポンス
    */
   private handleAuthResponse(response: AuthResponse): void {
     // トークンをセッションストレージに保存
